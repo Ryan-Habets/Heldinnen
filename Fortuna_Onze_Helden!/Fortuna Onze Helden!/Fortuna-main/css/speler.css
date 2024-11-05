@@ -1,0 +1,52 @@
+/*first blok top left*/
+#blok1 {
+  background-color: #036649;
+  height: 280px;
+  width: auto;
+}
+/*second blok top right*/
+#blok2 {
+  height: 280px;
+  width: auto;
+}
+/*third blok bottom left*/
+#blok3 {
+  height: 400px;
+  width: auto;
+  margin-top: 24px;
+  background-color: #036649;
+}
+/*fourth blok bottom right*/
+#blok4 {
+  background-color: #036649;
+  height: 400px;
+  width: auto;
+  margin-top: 24px;
+}
+/*Responsive grid*/
+@media all and (max-width: 991.5px) {
+  #blok2 {
+    background-color: #036649;
+    height: 400px;
+    width: auto;
+    margin-top: 24px;
+  }
+}
+/*Whole grid*/
+#grid_section {
+  margin-top: 25px;
+}
+/*Image fortuna sittard logo*/
+#image {
+  margin-top: 20px;
+}
+/*Player Image in blok 3*/
+#player_img {
+  margin-top: 20px;
+}
+/*Go Back Button Top Right*/
+#goback {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
