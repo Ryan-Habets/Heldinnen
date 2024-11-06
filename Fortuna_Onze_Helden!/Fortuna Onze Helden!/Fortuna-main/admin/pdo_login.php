@@ -12,26 +12,32 @@ try {
           if (empty($_POST["username"]) || empty($_POST["password"])) {
                $message = '<label>All fields are required</label>';
           } else {
-               $query = "SELECT * FROM users WHERE username = :username AND password = :password";
+               $query = "SELECT * FROM users WHERE username = :username";
                $statement = $connect->prepare($query);
-               $hashedwachtwoord = hash('sha512', $_POST["password"]);
                $statement->execute(
                     array(
-                         'username'     =>     $_POST["username"],
-                         'password'     =>     $hashedwachtwoord
+                         'username'     =>     $_POST["username"]
                     )
                );
-               $count = $statement->rowCount();
                $results = $statement->fetchAll(PDO::FETCH_OBJ);
+               $count = $statement->rowCount();
                foreach ($results as $result) {
                     echo $result->password;
                }
                if ($count > 0) {
-                    $_SESSION["username"] = $_POST["username"];
-                    header("location:index.php");
-               } else {
-                    $message = '<label>Wrong Data</label>';
-               }
+                    foreach ($results as $result) {
+                        // Debugging: Print the hashed password from the database
+                        error_log("Database password hash: " . $result->password);
+                        // Debugging: Print the plain-text password
+                        error_log("Entered password: " . $_POST["password"]);
+                        if (password_verify($_POST["password"], $result->password)) {
+                            $_SESSION["username"] = $_POST["username"];
+                            header("location:index.php");
+                        } else {
+                            $message = '<label>Wrong password</label>';
+                        }
+                    }
+                }
           }
      }
 } catch (PDOException $error) {

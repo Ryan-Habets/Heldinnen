@@ -70,6 +70,7 @@ if ($query->rowCount() > 0) {
 };
 ?>
 <script>
+    document.getElementById("myInput2").focus();
   //convert a PHP array to a JS Array
   var jsArray = <?php echo json_encode($array); ?>;
   //function to go a player page
