@@ -26,7 +26,7 @@
       <section>
         <div id="center" class="input-group mb-3">
           <span class="input-group-text bg-warning" id="basic-addon1"></span>
-          <input type="text" id="myInput2" onkeyup="filterFunction()" class="form-control" placeholder="Zoek een speler op naam..." aria-label="Username" aria-describedby="basic-addon1">
+          <input type="text" id="myInput2" onkeyup="filterFunction()" class="form-control" placeholder="Zoek een speler op naam..." aria-label="Username" aria-describedby="basic-addon1" autocomplete="off">
         </div>
         <div id="search_suggetion">
           <table id="myTable">
@@ -70,41 +70,85 @@ if ($query->rowCount() > 0) {
 };
 ?>
 <script>
-    document.getElementById("myInput2").focus();
-  //convert a PHP array to a JS Array
-  var jsArray = <?php echo json_encode($array); ?>;
-  //function to go a player page
-  function showplayer(id) {
-    window.location.href = "speler.php?ID=" + id + "";
-  }
-  //function const names vanuit array
-  for (var i = 0, len = jsArray.length; i < len; i++) {
-    var tr = document.createElement("tr");
-    tr.innerHTML = "<td onclick=showplayer('" + jsArray[i][0] + "')>" + jsArray[i][1] + " " + jsArray[i][2] + "</td>";
-    var td = document.createElement("td");
-    td.innerText = jsArray[i][1] + " " + jsArray[i][2];
-    var root = document.getElementById("tbo");
-    root.appendChild(tr);
-  }
-  //Filter function to update the list/table which acts as an search function
-  function filterFunction() {
-    var input, filter, table, tr, td, i, txtValue; //create all variables wer going to use
-    input = document.getElementById("myInput2");
-    filter = input.value.toUpperCase();
-    table = document.getElementById("myTable");
-    tr = table.getElementsByTagName("tr");
-    for (i = 0; i < tr.length; i++) {
-      td = tr[i].getElementsByTagName("td")[0];
-      if (td) {
-        txtValue = td.textContent || td.innerText;
-        if (txtValue.toUpperCase().indexOf(filter) > -1) {
-          tr[i].style.display = "";
-        } else {
-          tr[i].style.display = "none";
-        }
-      }
-    }
-  };
+
+                    document.addEventListener('DOMContentLoaded', (event) => {
+            var input = document.getElementById("myInput2");
+            input.focus(); // Focus op de zoekbalk bij het laden van de pagina
+            var currentFocus = 0;
+          
+            input.addEventListener("keydown", function(e) {
+              var x = document.getElementById("myTable").getElementsByTagName("tr");
+              var visibleRows = Array.from(x).filter(row => row.style.display !== "none");
+              if (visibleRows.length > 1) {
+                if (e.key === "ArrowDown") {
+                  currentFocus++;
+                  if (currentFocus >= visibleRows.length) currentFocus = 1; // Skip the header row
+                  addActive(visibleRows);
+                } else if (e.key === "ArrowUp") {
+                  currentFocus--;
+                  if (currentFocus < 1) currentFocus = visibleRows.length - 1; // Skip the header row
+                  addActive(visibleRows);
+                } else if (e.key === "Enter") {
+                  e.preventDefault();
+                  if (currentFocus > 0) { // Skip the header row
+                    if (visibleRows[currentFocus]) {
+                      visibleRows[currentFocus].querySelector("td").click();
+                    }
+                  }
+                }
+              }
+            });
+          
+            function addActive(x) {
+              if (!x) return false;
+              removeActive(x);
+              if (currentFocus >= x.length) currentFocus = 1; // Skip the header row
+              if (currentFocus < 1) currentFocus = x.length - 1; // Skip the header row
+              x[currentFocus].classList.add("suggestion-active");
+              x[currentFocus].scrollIntoView({ block: "nearest" });
+              input.placeholder = x[currentFocus].innerText; // Update de placeholder van het invoerveld
+            }
+          
+            function removeActive(x) {
+              for (var i = 1; i < x.length; i++) { // Start from 1 to skip the header row
+                x[i].classList.remove("suggestion-active");
+              }
+            }
+          });
+          
+          //convert a PHP array to a JS Array
+          var jsArray = <?php echo json_encode($array); ?>;
+          //function to go a player page
+          function showplayer(id) {
+            window.location.href = "speler.php?ID=" + id + "";
+          }
+          //function const names vanuit array
+          for (var i = 0, len = jsArray.length; i < len; i++) {
+            var tr = document.createElement("tr");
+            tr.innerHTML = "<td onclick=showplayer('" + jsArray[i][0] + "')>" + jsArray[i][1] + " " + jsArray[i][2] + "</td>";
+            var root = document.getElementById("tbo");
+            root.appendChild(tr);
+          }
+          
+          //Filter function to update the list/table which acts as an search function
+          function filterFunction() {
+            var input, filter, table, tr, td, i, txtValue; //create all variables wer going to use
+            input = document.getElementById("myInput2");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("myTable");
+            tr = table.getElementsByTagName("tr");
+            for (i = 0; i < tr.length; i++) {
+              td = tr[i].getElementsByTagName("td")[0];
+              if (td) {
+                txtValue = td.textContent || td.innerText;
+                if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                  tr[i].style.display = "";
+                } else {
+                  tr[i].style.display = "none";
+                }
+              }
+            }
+          }
 </script>
 </body>
 <style>
@@ -112,5 +156,10 @@ if ($query->rowCount() > 0) {
   body {
     background-color: #036649;
   }
+
+    .suggestion-active {
+    background-color: #FFC107;
+  }
+
 </style>
 </html>
