@@ -70,86 +70,84 @@ if ($query->rowCount() > 0) {
 };
 ?>
 <script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const input = document.getElementById("myInput2");
+    input.focus();
+    let currentFocus = 0;
 
-                    document.addEventListener('DOMContentLoaded', (event) => {
-            var input = document.getElementById("myInput2");
-            input.focus(); // Focus op de zoekbalk bij het laden van de pagina
-            var currentFocus = 0;
-          
-            input.addEventListener("keydown", function(e) {
-              var x = document.getElementById("myTable").getElementsByTagName("tr");
-              var visibleRows = Array.from(x).filter(row => row.style.display !== "none");
-              if (visibleRows.length > 1) {
-                if (e.key === "ArrowDown") {
-                  currentFocus++;
-                  if (currentFocus >= visibleRows.length) currentFocus = 1; // Skip the header row
-                  addActive(visibleRows);
-                } else if (e.key === "ArrowUp") {
-                  currentFocus--;
-                  if (currentFocus < 1) currentFocus = visibleRows.length - 1; // Skip the header row
-                  addActive(visibleRows);
-                } else if (e.key === "Enter") {
-                  e.preventDefault();
-                  if (currentFocus > 0) { // Skip the header row
-                    if (visibleRows[currentFocus]) {
-                      visibleRows[currentFocus].querySelector("td").click();
-                    }
-                  }
-                }
-              }
-            });
-          
-            function addActive(x) {
-              if (!x) return false;
-              removeActive(x);
-              if (currentFocus >= x.length) currentFocus = 1; // Skip the header row
-              if (currentFocus < 1) currentFocus = x.length - 1; // Skip the header row
-              x[currentFocus].classList.add("suggestion-active");
-              x[currentFocus].scrollIntoView({ block: "nearest" });
-              input.placeholder = x[currentFocus].innerText; // Update de placeholder van het invoerveld
-            }
-          
-            function removeActive(x) {
-              for (var i = 1; i < x.length; i++) { // Start from 1 to skip the header row
-                x[i].classList.remove("suggestion-active");
-              }
-            }
-          });
-          
-          //convert a PHP array to a JS Array
-          var jsArray = <?php echo json_encode($array); ?>;
-          //function to go a player page
-          function showplayer(id) {
-            window.location.href = "speler.php?ID=" + id + "";
+    input.addEventListener("keydown", function (e) {
+      const rows = Array.from(document.querySelectorAll("#myTable tr:not(.header)"));
+      const visibleRows = rows.filter(row => row.style.display !== "none");
+
+      if (visibleRows.length > 0) {
+        if (e.key === "ArrowDown") {
+          currentFocus = (currentFocus + 1) % visibleRows.length;
+          updateActiveRow(visibleRows);
+        } else if (e.key === "ArrowUp") {
+          currentFocus = (currentFocus - 1 + visibleRows.length) % visibleRows.length;
+          updateActiveRow(visibleRows);
+        } else if (e.key === "Enter") {
+          e.preventDefault();
+          if (currentFocus >= 0 && visibleRows[currentFocus]) {
+            visibleRows[currentFocus].querySelector("td").click();
           }
-          //function const names vanuit array
-          for (var i = 0, len = jsArray.length; i < len; i++) {
-            var tr = document.createElement("tr");
-            tr.innerHTML = "<td onclick=showplayer('" + jsArray[i][0] + "')>" + jsArray[i][1] + " " + jsArray[i][2] + "</td>";
-            var root = document.getElementById("tbo");
-            root.appendChild(tr);
-          }
-          
-          //Filter function to update the list/table which acts as an search function
-          function filterFunction() {
-            var input, filter, table, tr, td, i, txtValue; //create all variables wer going to use
-            input = document.getElementById("myInput2");
-            filter = input.value.toUpperCase();
-            table = document.getElementById("myTable");
-            tr = table.getElementsByTagName("tr");
-            for (i = 0; i < tr.length; i++) {
-              td = tr[i].getElementsByTagName("td")[0];
-              if (td) {
-                txtValue = td.textContent || td.innerText;
-                if (txtValue.toUpperCase().indexOf(filter) > -1) {
-                  tr[i].style.display = "";
-                } else {
-                  tr[i].style.display = "none";
-                }
-              }
-            }
-          }
+        }
+      }
+    });
+
+    function updateActiveRow(rows) {
+      rows.forEach(row => row.classList.remove("suggestion-active"));
+      rows[currentFocus].classList.add("suggestion-active");
+      rows[currentFocus].scrollIntoView({ block: "nearest" });
+      input.placeholder = rows[currentFocus].innerText;
+    }
+
+    // Convert a PHP array to a JS Array
+    const jsArray = <?php echo json_encode($array); ?>;
+
+    // Populate the table
+    const tableBody = document.getElementById("tbo");
+    jsArray.forEach(([id, firstName, lastName]) => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td onclick="showPlayer('${id}')">${firstName} ${lastName}</td>`;
+      tableBody.appendChild(tr);
+    });
+
+    // Sort and filter function
+    function filterFunction() {
+      const filter = input.value.toUpperCase();
+      const rows = Array.from(document.querySelectorAll("#myTable tr:not(.header)"));
+
+      // Sort rows alphabetically
+      rows.sort((a, b) => {
+        const textA = a.querySelector("td")?.textContent || "";
+        const textB = b.querySelector("td")?.textContent || "";
+        return textA.localeCompare(textB);
+      });
+
+      // Append sorted rows back to the table
+      rows.forEach(row => tableBody.appendChild(row));
+
+      // Filter rows
+      rows.forEach(row => {
+        const text = row.querySelector("td")?.textContent || "";
+        row.style.display = text.toUpperCase().includes(filter) ? "" : "none";
+      });
+    }
+
+    // Attach the filter function to the input
+    input.addEventListener("input", filterFunction);
+
+    // Function to navigate to a player's page
+    window.showPlayer = function (id) {
+      window.location.href = `speler.php?ID=${id}`;
+    };
+
+    // Initial sorting
+    filterFunction();
+  });
 </script>
+
 </body>
 <style>
   /* kleur veranderen in de styles.css werkt niet hij word overwritten */

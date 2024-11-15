@@ -161,7 +161,7 @@ function newFileName($type)
                     <input type="text" name="positie" class="form-control">
                 </div>
                 <div class="col-md-4"><b>Debuut</b>
-                    <input type="text" name="debuut" class="form-control" maxlength="10">
+                    <input type="text" name="debuut" class="form-control" maxlength="50">
                 </div>
             </div>
             <div class="row">
