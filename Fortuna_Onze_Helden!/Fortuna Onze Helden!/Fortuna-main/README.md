@@ -2,9 +2,9 @@
 Opdracht Fortuna Sittard 
 
 # Functionaliteiten
--Zoek een speler via een search bar.
--Inspecteer de speler door op hem te klikken.
--Ga terug naar het zoek menu.
+-Zoek een speler via een search bar. (pijltjes ↑↓)
+-Inspecteer de speler door op hem te klikken. (ENTER)
+-Ga terug naar het zoek menu. (ESC)
 
 # Logica
 Index(search page)-->Select all players from DB-->Fill array-->show in table under search bar-->done
