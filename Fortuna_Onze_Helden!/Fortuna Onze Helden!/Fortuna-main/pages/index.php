@@ -41,8 +41,8 @@
     </div>
     <div style="background-color: #FFC107;" class="col-lg-2">
       <img style="width: 100%; padding-top: 1rem; height: auto;" src="../resources/logo.png">
-      <img style="width: 100%; padding-top: 1rem; height: auto;" src="../resources/54.png">
-      <img class="mb-3" style="width: 100%; height: auto;" src="../resources/sittardia.png">
+      <!-- <img style="width: 100%; padding-top: 1rem; height: auto;" src="../resources/54.png"> -->
+        <!-- <img class="mb-3" style="width: 100%; height: auto;" src="../resources/sittardia.png"> -->
     </div>
   </div>
 </div>

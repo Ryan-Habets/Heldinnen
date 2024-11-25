@@ -28,12 +28,13 @@ if (isset($_POST['update'])) {
     $ookgespeeldvoor = $_POST['ookgespeeldvoor'];
     $bijzonderheden = $_POST['bijzonderheden'];
     $gespeeldbij = $_POST['gespeeldbij'];
+    $rugnummer = $_POST['rugnummer'];
+    $url = $_POST['url'];
 
     $filename = $_POST['filename'];
     if (empty($filename)) {
         echo $filename = newFileName("png");
     }
-
 
     //switch
     if (!empty($_FILES["file"]["name"])) {
@@ -44,7 +45,7 @@ if (isset($_POST['update'])) {
         $temp = $_FILES["file"]["tmp_name"];
 
         // Query for Query for Updation
-        $sql = "update spelers set voornaam=:vn,achternaam=:an,seizoenen=:sz,gespeeldbij=:gb,afbeelding=:afb,nationaliteit=:nat,geboortedatum=:gebd,geboorteplaats=:geb,sterfdatum=:stf,positie=:po,debuut=:deb,ookgespeeldvoor=:ogv,bijzonderheden=:bz where id=:uid";
+        $sql = "update spelers set voornaam=:vn,achternaam=:an,seizoenen=:sz,gespeeldbij=:gb,afbeelding=:afb,nationaliteit=:nat,geboortedatum=:gebd,geboorteplaats=:geb,sterfdatum=:stf,positie=:po,debuut=:deb,ookgespeeldvoor=:ogv,bijzonderheden=:bz,rugnummer=:rn,URL=:url where id=:uid";
         //Prepare Query for Execution
         $query = $dbh->prepare($sql);
         // Bind the parameters
@@ -61,12 +62,14 @@ if (isset($_POST['update'])) {
         $query->bindParam(':deb', $debuut, PDO::PARAM_STR);
         $query->bindParam(':ogv', $ookgespeeldvoor, PDO::PARAM_STR);
         $query->bindParam(':bz', $bijzonderheden, PDO::PARAM_STR);
+        $query->bindParam(':rn', $rugnummer, PDO::PARAM_STR);
+        $query->bindParam(':url', $url, PDO::PARAM_STR);
         $query->bindParam(':uid', $userid, PDO::PARAM_STR);
 
         move_uploaded_file($temp, "../images/" . $filename);
     } else {
         // Query for Query for Updation
-        $sql = "update spelers set voornaam=:vn,achternaam=:an,seizoenen=:sz,gespeeldbij=:gb,nationaliteit=:nat,geboortedatum=:gebd,geboorteplaats=:geb,sterfdatum=:stf,positie=:po,debuut=:deb,ookgespeeldvoor=:ogv,bijzonderheden=:bz where id=:uid";
+        $sql = "update spelers set voornaam=:vn,achternaam=:an,seizoenen=:sz,gespeeldbij=:gb,nationaliteit=:nat,geboortedatum=:gebd,geboorteplaats=:geb,sterfdatum=:stf,positie=:po,debuut=:deb,ookgespeeldvoor=:ogv,bijzonderheden=:bz,rugnummer=:rn,URL=:url where id=:uid";
         //Prepare Query for Execution
         $query = $dbh->prepare($sql);
         // Bind the parameters
@@ -82,6 +85,8 @@ if (isset($_POST['update'])) {
         $query->bindParam(':deb', $debuut, PDO::PARAM_STR);
         $query->bindParam(':ogv', $ookgespeeldvoor, PDO::PARAM_STR);
         $query->bindParam(':bz', $bijzonderheden, PDO::PARAM_STR);
+        $query->bindParam(':rn', $rugnummer, PDO::PARAM_STR);
+        $query->bindParam(':url', $url, PDO::PARAM_STR);
         $query->bindParam(':uid', $userid, PDO::PARAM_STR);
     }
     // Query Execution
@@ -89,7 +94,7 @@ if (isset($_POST['update'])) {
     // Mesage after updation
     echo "<script>alert('Record Updated successfully');</script>";
     // Code for redirection
-	echo "<script>window.location.href='index.php'</script>";
+    echo "<script>window.location.href='index.php'</script>";
 
 }
 
@@ -171,7 +176,6 @@ function newFileName($type)
                             <input type="text" value="<?php echo htmlentities($result->achternaam); ?>" name="achternaam" class="form-control" required>
                         </div>
                     </div>
-
                     <div class="row">
                         <div class="col-md-4"><b>Seizoenen</b>
                             <input type="text" value="<?php echo htmlentities($result->seizoenen); ?>" name="seizoenen" class="form-control">
@@ -220,12 +224,18 @@ function newFileName($type)
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-md-8"><b>Gespeeld voor</b><br>
-                            <select id="gespeeldbij" name="gespeeldbij">
-                                <option value="1">Fortuna Sittard</option>
-                                <option value="2">Fortuna 54</option>
-                                <option value="3">Sittardia</option>
-                            </select>
+                        <div class="col-md-8">
+                            <input type="hidden" id="gespeeldbij" name="gespeeldbij" value="1">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8"><b>Rugnummer</b>
+                            <input type="text" value="<?php echo htmlentities($result->rugnummer); ?>" name="rugnummer" class="form-control">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-8"><b>URL</b>
+                            <input type="url" value="<?php echo htmlentities($result->URL); ?>" name="url" class="form-control">
                         </div>
                     </div>
             <?php }
@@ -236,9 +246,7 @@ function newFileName($type)
                     <input type="submit" name="update" value="Aanpassen">
                 </div>
             </div>
-                </form>
-
-
+                </form>      
     </div>
     </div>
 </body>

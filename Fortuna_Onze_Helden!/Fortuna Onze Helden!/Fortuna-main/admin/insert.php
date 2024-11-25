@@ -26,6 +26,8 @@ if (isset($_POST['insert'])) {
     $ookgespeeldvoor = $_POST['ookgespeeldvoor'];
     $bijzonderheden = $_POST['bijzonderheden'];
     $gespeeldvoor = $_POST['gespeeldvoor'];
+    $rugnummer = $_POST['rugnummer'];
+    $url = $_POST['url'];
 
     $image_file = $_FILES["file"]["name"];
     $type = $_FILES["file"]["type"];
@@ -44,7 +46,7 @@ if (isset($_POST['insert'])) {
         $newFileName = null;
     }
     // Query for Insertion
-    $sql = "INSERT INTO spelers(voornaam,achternaam,seizoenen,gespeeldbij,afbeelding,nationaliteit,geboortedatum,geboorteplaats,sterfdatum,positie,debuut,ookgespeeldvoor,bijzonderheden) VALUES(:vn,:an,:sz,:gv,:afb,:nat,:gebd,:geb,:stf,:po,:deb,:ogv,:bz)";
+    $sql = "INSERT INTO spelers(voornaam,achternaam,seizoenen,gespeeldbij,afbeelding,nationaliteit,geboortedatum,geboorteplaats,sterfdatum,positie,debuut,ookgespeeldvoor,bijzonderheden,rugnummer,URL) VALUES(:vn,:an,:sz,:gv,:afb,:nat,:gebd,:geb,:stf,:po,:deb,:ogv,:bz,:rn,:url)";
     //Prepare Query for Execution
     $query = $dbh->prepare($sql);
     // Bind the parameters
@@ -61,6 +63,8 @@ if (isset($_POST['insert'])) {
     $query->bindParam(':deb', $debuut, PDO::PARAM_STR);
     $query->bindParam(':ogv', $ookgespeeldvoor, PDO::PARAM_STR);
     $query->bindParam(':bz', $bijzonderheden, PDO::PARAM_STR);
+    $query->bindParam(':rn', $rugnummer, PDO::PARAM_STR);
+    $query->bindParam(':url', $url, PDO::PARAM_STR);
     // Query Execution
     $query->execute();
     // Check that the insertion really worked. If the last inserted id is greater than zero, the insertion worked.
@@ -175,21 +179,28 @@ function newFileName($type)
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-8"><b>Gespeeld voor</b><br>
-                    <select id="gespeeldvoor" name="gespeeldvoor">
-                        <option value="1">Fortuna Sittard</option>
-                        <option value="2">Fortuna 54</option>
-                        <option value="3">Sittardia</option>
-                    </select>
+                <div class="col-md-8">
+                    <input type="hidden" id="gespeeldvoor" name="gespeeldvoor" value="1">
+    
                 </div>
             </div>
+            <div class="row">
+                <div class="col-md-8"><b>Rugnummer</b>
+                    <input type="text" name="rugnummer" class="form-control">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-8"><b>URL</b>
+                    <input type="url" name="url" class="form-control">
+                </div>
+            </div>
+            <br>
             <div class="row" style="margin-top:1%">
                 <div class="col-md-8">
                     <input type="submit" name="insert" value="Opslaan">
                 </div>
             </div>
         </form>
-    </div>
     </div>
 </body>
 </html>

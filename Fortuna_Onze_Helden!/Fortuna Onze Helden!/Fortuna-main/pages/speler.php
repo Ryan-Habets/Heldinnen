@@ -21,15 +21,15 @@ if ($query->rowCount() > 0) {
   $switch = true;
   foreach ($results as $result) {
     if ($switch == true) {
-      $array = [[$result->id, $result->voornaam, $result->achternaam, $result->seizoenen, $result->gespeeldbij, $result->afbeelding, $result->nationaliteit, $result->geboortedatum, $result->geboorteplaats, $result->sterfdatum, $result->positie, $result->debuut, $result->ookgespeeldvoor, $result->bijzonderheden]];
+      $array = [[$result->id, $result->voornaam, $result->achternaam, $result->seizoenen, $result->gespeeldbij, $result->afbeelding, $result->nationaliteit, $result->geboortedatum, $result->geboorteplaats, $result->sterfdatum, $result->positie, $result->debuut, $result->ookgespeeldvoor, $result->bijzonderheden, $result->rugnummer, $result->URL]];
       $switch = false;
     } else {
-      array_push($array, [$result->id, $result->voornaam, $result->achternaam, $result->seizoenen, $result->gespeeldbij, $result->afbeelding, $result->nationaliteit, $result->geboortedatum, $result->geboorteplaats, $result->sterfdatum, $result->positie, $result->debuut, $result->ookgespeeldvoor, $result->bijzonderheden]);
+      array_push($array, [$result->id, $result->voornaam, $result->achternaam, $result->seizoenen, $result->gespeeldbij, $result->afbeelding, $result->nationaliteit, $result->geboortedatum, $result->geboorteplaats, $result->sterfdatum, $result->positie, $result->debuut, $result->ookgespeeldvoor, $result->bijzonderheden, $result->rugnummer, $result->URL]);
     }
   }
 };
 if (!empty($array)) {
-  foreach ($array as list($id, $voornaam, $achternaam, $seizoenen, $gespeeldbij, $afbeelding, $nationaliteit, $geboortedatum, $geboorteplaats, $sterfdatum, $positie, $debuut, $ookgespeeldvoor, $bijzonderheden)) {
+  foreach ($array as list($id, $voornaam, $achternaam, $seizoenen, $gespeeldbij, $afbeelding, $nationaliteit, $geboortedatum, $geboorteplaats, $sterfdatum, $positie, $debuut, $ookgespeeldvoor, $bijzonderheden, $rugnummer, $video_url)) {
 ?>
     <section id="grid_section">
       <div id="goback">
@@ -37,33 +37,50 @@ if (!empty($array)) {
       </div>
       <div class="container text-center">
         <div class="row">
-          <div class="col-lg-8 col-md-12">
+          <!-- first blok top left -->
+          <div class="col-lg-4 col-md-6">
             <div id="blok1">
               <?php echo "<h1>$voornaam $achternaam</h1>"; ?>
               <hr>
               <?php echo "<span>$bijzonderheden</span>"; ?>
             </div>
           </div>
+          <!-- Video Player second blok top middle -->
           <div class="col-lg-4 col-md-6">
+            <div class="video-container">
+              <?php if (strpos($video_url, 'youtube.com') !== false || strpos($video_url, 'youtu.be') !== false) { 
+                // Ensure the URL is correctly formatted for embedding
+                $embed_url = str_replace('watch?v=', 'embed/', $video_url);
+                if (strpos($embed_url, 'youtube.com') !== false) {
+                  $embed_url .= '?autoplay=1';
+                } else {
+                  $embed_url .= '?autoplay=1';
+                }
+              ?>
+                <iframe id="videoPlayer" src="<?php echo $embed_url; ?>" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+              <?php } else { ?>
+                <video id="videoPlayer" controls>
+                  <source src="<?php echo $video_url; ?>" type="video/mp4">
+                  Your browser does not support the video tag.
+                </video>
+              <?php } ?>
+            </div> 
+          </div>
+          <!-- third blok top right -->
+          <div class="col-lg-4 col-md-2">
             <div id="blok2">
-              <?php if($gespeeldbij == 1){ ?>
-                <img id="image" src="../resources/logo.png" style="width: 200px;"></img>
-              <?php } ?>
-              <?php if($gespeeldbij == 2){ ?>
-                <img id="image" src="../resources/sittardia.png" style="width: 200px;"></img>
-              <?php } ?>
-              <?php if($gespeeldbij == 3){ ?>
-                <img id="image" src="../resources/54.png" style="width: 200px;"></img>
-              <?php } ?>
+              <img id="image" src="../resources/logo.png" style="width: 200px;"></img>
             </div>
           </div>
+          <!-- fourth blok bottom left -->
           <div class="col-lg-4 col-md-6">
             <div id="blok3">
               <?php if (!empty($afbeelding)) { ?>
-                <img id="player_img" onclick="play()" id="image" src="../images/<?php echo $afbeelding; ?>" style="width: 250px;"></img>
+                <img id="player_img" onclick="play()" src="../images/<?php echo $afbeelding; ?>" style="height: 280px;" style="width: 100%;"></img>
               <?php }; ?>
             </div>
           </div>
+          <!-- fifth blok bottom right -->
           <div class="col-lg-8 col-md-12">
             <div id="blok4">
               <div class="row">
@@ -81,6 +98,9 @@ if (!empty($array)) {
                   } ?>
                   <?php if (!empty($ookgespeeldvoor)) {
                     echo "<p> Ook gespeeld voor: $ookgespeeldvoor</p>";
+                  } ?>
+                  <?php if (!empty($rugnummer)) {
+                    echo "<p> Rugnummer: $rugnummer</p>";
                   } ?>
                 </div>
                 <div class="col-lg-6 col-md-6">
@@ -138,6 +158,17 @@ if (!empty($array)) {
     document.addEventListener("keydown", function(e) {
       if (e.key === "Escape") {
         goBack(); // Roep de goBack functie aan om terug te gaan naar de vorige pagina
+      }
+      if (e.code === "Space") {
+        var video = document.getElementById('videoPlayer');
+        if (video) {
+          if (video.tagName.toLowerCase() === 'iframe') {
+            var iframeSrc = video.src;
+            video.src = iframeSrc + (iframeSrc.indexOf('?') > -1 ? '&' : '?') + 'autoplay=1';
+          } else {
+            video.play();
+          }
+        }
       }
     });
   });
