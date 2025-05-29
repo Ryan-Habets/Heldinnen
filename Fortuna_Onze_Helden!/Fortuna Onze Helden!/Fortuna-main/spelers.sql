@@ -66,7 +66,7 @@ ALTER TABLE `spelers`
 --
 
 --
--- AUTO_INCREMENT voor een tabel `spelers`
+-- AUTO_INCREMENT voor een tabel `spelers'
 --
 ALTER TABLE `spelers`
   MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
